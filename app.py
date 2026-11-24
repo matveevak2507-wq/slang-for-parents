@@ -1,4 +1,5 @@
 import os
+import random
 import uuid
 from functools import wraps
 
@@ -82,7 +83,9 @@ def word_page(word_id):
 # ---------- Викторина ----------
 
 def _build_quiz(limit=20):
-    return QuizQuestion.query.order_by(db.func.rand()).limit(limit).all()
+    all_q = QuizQuestion.query.all()
+    random.shuffle(all_q)
+    return all_q[:limit]
 
 
 @app.route("/quiz")
@@ -177,7 +180,9 @@ def quiz_results():
 # ---------- Пропуски ----------
 
 def _build_fills(limit=20):
-    return FillBlankTask.query.order_by(db.func.rand()).limit(limit).all()
+    all_f = FillBlankTask.query.all()
+    random.shuffle(all_f)
+    return all_f[:limit]
 
 
 @app.route("/fill-blank")
