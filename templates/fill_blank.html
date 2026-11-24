@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Пропуски {{ num }}/{{ total }}{% endblock %}
+{% block content %}
+<div class="panel">
+    <h1 class="page-title">Вставьте пропуски</h1>
+    <p class="quiz-counter">Задание {{ num }} из {{ total }}</p>
+    <p class="quiz-question">{{ f.sentence }}</p>
+
+    <form method="post" class="fill-form">
+        <input type="text" name="answer" class="fill-input"
+               placeholder="Введите слово..."
+               value="{{ current_answer }}" autocomplete="off" autofocus>
+
+        <div class="quiz-nav">
+            {% if num > 1 %}
+            <button type="submit" name="action" value="back" class="btn btn-secondary">← Назад</button>
+            {% else %}<span></span>{% endif %}
+
+            {% if num == total %}
+            <button type="submit" name="action" value="finish" class="btn btn-primary"
+                    onclick="return confirm('Завершить и увидеть результат?');">Завершить</button>
+            {% else %}
+            <button type="submit" name="action" value="next" class="btn btn-primary">Дальше →</button>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

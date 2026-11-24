@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Админ-панель{% endblock %}
+{% block content %}
+<div class="panel admin-panel">
+    <div class="admin-header">
+        <h1 class="page-title">Админ-панель</h1>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary btn-small">Выйти</a>
+    </div>
+
+    <div class="admin-actions">
+        <a href="{{ url_for('admin_new_question') }}" class="btn btn-primary">+ Новый вопрос викторины</a>
+        <a href="{{ url_for('admin_new_fill') }}" class="btn btn-primary">+ Новое задание с пропуском</a>
+    </div>
+
+    <h2>Предложки от пользователей</h2>
+    {% if suggestions %}
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Слово</th>
+                    <th>Объяснение</th>
+                    <th>Фото</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in suggestions %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('admin_edit_suggestion', sid=s.id) }}" class="admin-word-link">{{ s.word }}</a>
+                    </td>
+                    <td>{{ s.meaning[:200] }}{% if s.meaning|length > 200 %}…{% endif %}</td>
+                    <td>
+                        {% if s.image_name %}
+                        <img src="{{ url_for('uploaded_file', filename=s.image_name) }}" alt="" class="admin-thumb">
+                        {% else %}—{% endif %}
+                    </td>
+                    <td class="admin-table-actions">
+                        <form method="post" action="{{ url_for('admin_approve', sid=s.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-small">Одобрить</button>
+                        </form>
+                        <form method="post" action="{{ url_for('admin_reject', sid=s.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-small">Отклонить</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>Нет новых предложек.</p>
+    {% endif %}
+
+    <h2 style="margin-top: 32px;">Словарь ({{ words|length }})</h2>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Слово</th>
+                    <th>Фото</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for w in words %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('admin_edit_word', wid=w.id) }}" class="admin-word-link">{{ w.word }}</a>
+                    </td>
+                    <td>
+                        {% if w.image_name %}
+                        <img src="{{ url_for('uploaded_file', filename=w.image_name) }}" alt="" class="admin-thumb">
+                        {% else %}—{% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin_edit_word', wid=w.id) }}" class="btn btn-secondary btn-small">Редактировать</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

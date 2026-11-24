@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Словарь — Слэнг для родителей{% endblock %}
+{% block content %}
+<div class="panel">
+    <h1 class="page-title">Словарь</h1>
+    <div class="dictionary">
+        {% for letter, words in grouped %}
+        <h2 class="letter-heading">{{ letter }}</h2>
+        <ul class="word-list">
+            {% for w in words %}
+            <li><a class="word-link" href="{{ url_for('word_page', word_id=w.id) }}">{{ w.word }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

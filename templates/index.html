@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Переводчик с молодёжного — Слэнг для родителей{% endblock %}
+{% block content %}
+<div class="panel">
+    <h1 class="page-title">Переводчик с молодёжного: шпаргалка для взрослых</h1>
+    <p class="lead">
+        Этот сайт создан, чтобы помочь родителям понимать своих детей-подростков
+        и их слэнг. Мы собрали самые популярные молодёжные слова с объяснениями
+        и происхождением, подготовили викторину и интерактивные задания — чтобы
+        вы не только читали, но и проверяли себя. Изучайте, играйте и находите
+        общий язык со своим ребёнком!
+    </p>
+
+    <div class="home-grid">
+        <div class="home-col-main">
+            <div class="home-section-header">
+                <h2>Словарь и интерактив для родителей</h2>
+                <p>Рекомендуем проходить так:</p>
+            </div>
+            <div class="home-buttons-row">
+                <a href="{{ url_for('dictionary') }}" class="box-square">Словарь</a>
+                <span class="home-arrow">→</span>
+                <a href="{{ url_for('quiz_start') }}" class="box-square">Викторина</a>
+                <span class="home-arrow">→</span>
+                <a href="{{ url_for('fill_start') }}" class="box-square">Вставьте пропуски</a>
+            </div>
+        </div>
+        <div class="home-col-side">
+            <div class="home-section-header">
+                <h2>Для молодёжи</h2>
+                <p>Можете предложить своё сленговое слово:</p>
+            </div>
+            <div class="home-buttons-row">
+                <a href="{{ url_for('suggest') }}" class="box-square box-square-suggest">Предложить своё</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

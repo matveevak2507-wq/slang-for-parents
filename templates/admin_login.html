@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Вход администратора{% endblock %}
+{% block content %}
+<div class="panel form-panel">
+    <h1 class="page-title">Вход администратора</h1>
+    <form method="post" class="login-form">
+        <label>
+            Логин
+            <input type="text" name="username" required autocomplete="username">
+        </label>
+        <label>
+            Пароль
+            <input type="password" name="password" required autocomplete="current-password">
+        </label>
+        <button type="submit" class="btn btn-primary btn-full">Войти</button>
+    </form>
+</div>
+{% endblock %}

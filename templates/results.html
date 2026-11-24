@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Результаты — {{ title }}{% endblock %}
+{% block content %}
+<div class="panel results-panel" id="result-panel">
+    <h1 class="page-title">Ваш результат</h1>
+    <div class="results-score" style="color: {{ color }};">
+        {{ score }}<span class="results-total">/{{ total }}</span>
+    </div>
+    <p class="results-message">{{ message }}</p>
+
+    <div class="results-actions" id="result-actions">
+        <a href="{{ retry_url }}" class="btn btn-primary">Попробовать снова</a>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">На главную</a>
+        <button type="button" class="btn btn-secondary" id="save-result-btn">💾 Сохранить как PNG</button>
+    </div>
+
+    <h2 class="results-table-title">Разбор ответов</h2>
+    <div class="results-table-wrap">
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Вопрос</th>
+                    <th>Ваш ответ</th>
+                    <th>Правильный ответ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in details %}
+                <tr class="{% if d.is_correct %}row-correct{% else %}row-wrong{% endif %}">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ d.question }}</td>
+                    <td>{{ d.user_answer }}</td>
+                    <td>{{ d.correct_answer }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+document.getElementById('save-result-btn').addEventListener('click', async () => {
+    const panel = document.getElementById('result-panel');
+    const actions = document.getElementById('result-actions');
+
+    const origBg = panel.style.background;
+    const origActions = actions.style.display;
+
+    panel.style.background = '#b0b0b0';
+    actions.style.display = 'none';
+
+    try {
+        const canvas = await html2canvas(panel, {
+            backgroundColor: '#b0b0b0',
+            scale: 2,
+            useCORS: true,
+            logging: false
+        });
+        const link = document.createElement('a');
+        link.download = 'result-{{ score }}-of-{{ total }}.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } finally {
+        panel.style.background = origBg;
+        actions.style.display = origActions;
+    }
+});
+</script>
+{% endblock %}

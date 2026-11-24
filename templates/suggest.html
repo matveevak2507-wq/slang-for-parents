@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Предложить слово{% endblock %}
+{% block content %}
+<div class="panel form-panel">
+    <h1 class="page-title">Форма предложений</h1>
+    <p class="lead">Предложите своё сленговое слово — мы рассмотрим его и, возможно, добавим в словарь.</p>
+
+    <form method="post" enctype="multipart/form-data" class="suggest-form">
+        <label>
+            Слово <span class="required">*</span>
+            <input type="text" name="word" required maxlength="100" placeholder="Например: краш">
+        </label>
+        <label>
+            Объяснение
+            <textarea name="meaning" rows="4" placeholder="Что означает это слово?"></textarea>
+        </label>
+        <label>
+            Фото (необязательно)
+            <input type="file" name="image" accept="image/*">
+        </label>
+        <button type="submit" class="btn btn-primary btn-full">Отправить</button>
+        <p class="small-note">
+            Слово будет рассмотрено в течение 30 рабочих лет. Спасибо за терпение 😊
+        </p>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Предложение: {{ s.word }}{% endblock %}
+{% block content %}
+<div class="panel form-panel">
+    <h1 class="page-title">Предложение от пользователя</h1>
+    <form method="post" enctype="multipart/form-data" class="suggest-form">
+        <label>
+            Слово
+            <input type="text" name="word" value="{{ s.word }}" required>
+        </label>
+        <label>
+            Значение
+            <textarea name="meaning" rows="5" required>{{ s.meaning }}</textarea>
+        </label>
+        <label>
+            Фото {% if s.image_name %}(текущее: {{ s.image_name }}){% endif %}
+            <input type="file" name="image" accept="image/*">
+        </label>
+        <div class="form-actions">
+            <button type="submit" name="action" value="approve" class="btn btn-success">Одобрить и в словарь</button>
+            <button type="submit" name="action" value="save" class="btn btn-primary">Сохранить</button>
+            <button type="submit" name="action" value="reject" class="btn btn-danger"
+                    onclick="return confirm('Отклонить предложение?');">Отклонить</button>
+            <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

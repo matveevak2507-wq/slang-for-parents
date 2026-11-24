@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Новый вопрос{% endblock %}
+{% block content %}
+<div class="panel form-panel">
+    <h1 class="page-title">Новый вопрос викторины</h1>
+    <form method="post" class="suggest-form">
+        <label>
+            Вопрос
+            <textarea name="question" rows="2" required></textarea>
+        </label>
+        {% for letter in ['a', 'b', 'c'] %}
+        <label>
+            Вариант {{ letter|upper }}
+            <div class="option-input-row">
+                <input type="text" name="option_{{ letter }}" required>
+                <label class="checkbox-label">
+                    <input type="checkbox" name="correct" value="{{ letter }}">
+                    Правильный
+                </label>
+            </div>
+        </label>
+        {% endfor %}
+        <label>
+            Вариант D (необязательно)
+            <div class="option-input-row">
+                <input type="text" name="option_d">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="correct" value="d">
+                    Правильный
+                </label>
+            </div>
+        </label>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Добавить</button>
+            <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ word.word }} — Словарь{% endblock %}
+
+{% block back_button %}
+<a href="{{ url_for('dictionary') }}"
+   onclick="event.preventDefault(); if(history.length>1){history.back();}else{window.location.href=this.href;}"
+   class="home-link">← Назад</a>
+{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <h1 class="page-title">{{ word.word }}</h1>
+    <div class="word-layout{% if word.image_name %} word-with-image{% endif %}">
+        {% if word.image_name %}
+        <div class="word-image">
+            <img src="{{ url_for('uploaded_file', filename=word.image_name) }}" alt="{{ word.word }}">
+        </div>
+        {% endif %}
+        <div class="word-content">
+            <p><strong>Значение:</strong> {{ word.meaning }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

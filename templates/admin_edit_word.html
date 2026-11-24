@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Редактирование: {{ word.word }}{% endblock %}
+{% block content %}
+<div class="panel form-panel">
+    <h1 class="page-title">Редактирование слова</h1>
+    <form method="post" enctype="multipart/form-data" class="suggest-form">
+        <label>
+            Слово
+            <input type="text" name="word" value="{{ word.word }}" required>
+        </label>
+        <label>
+            Значение
+            <textarea name="meaning" rows="5" required>{{ word.meaning }}</textarea>
+        </label>
+        <label>
+            Фото {% if word.image_name %}(текущее: {{ word.image_name }}){% endif %}
+            <input type="file" name="image" accept="image/*">
+        </label>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
