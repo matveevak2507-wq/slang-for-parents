@@ -25,7 +25,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "images", "words")
-    MAX_CONTENT_LENGTH = 5 * 1024 * 1024
+    MAX_CONTENT_LENGTH = 20 * 1024 * 1024   # 20 МБ
 
     ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
     ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "changeme")

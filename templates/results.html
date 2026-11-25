@@ -15,7 +15,7 @@
     </div>
 
     <h2 class="results-table-title">Разбор ответов</h2>
-    <div class="results-table-wrap">
+    <div class="results-table-wrap" id="results-table-wrap">
         <table class="results-table">
             <thead>
                 <tr>
@@ -46,27 +46,75 @@
 document.getElementById('save-result-btn').addEventListener('click', async () => {
     const panel = document.getElementById('result-panel');
     const actions = document.getElementById('result-actions');
+    const wrap = document.getElementById('results-table-wrap');
 
-    const origBg = panel.style.background;
-    const origActions = actions.style.display;
-
-    panel.style.background = '#b0b0b0';
-    actions.style.display = 'none';
+    // Запоминаем исходные стили, чтобы вернуть после съёмки
+    const restore = {
+        panelBg: panel.style.background,
+        panelWidth: panel.style.width,
+        panelMinWidth: panel.style.minWidth,
+        panelMaxWidth: panel.style.maxWidth,
+        actionsDisplay: actions.style.display,
+        wrapOverflow: wrap.style.overflow,
+        wrapOverflowX: wrap.style.overflowX,
+        bodyPadding: document.body.style.padding,
+        bodyWidth: document.body.style.width,
+        htmlWidth: document.documentElement.style.width,
+    };
 
     try {
+        // 1. Прячем кнопки (чтобы не было на картинке)
+        actions.style.display = 'none';
+
+        // 2. Убираем горизонтальный скролл у таблицы
+        wrap.style.overflow = 'visible';
+        wrap.style.overflowX = 'visible';
+
+        // 3. Расширяем панель, чтобы таблица влезла целиком
+        const targetWidth = Math.max(panel.scrollWidth, 900);
+        panel.style.background = '#b0b0b0';
+        panel.style.maxWidth = 'none';
+        panel.style.minWidth = targetWidth + 'px';
+        panel.style.width = targetWidth + 'px';
+
+        // 4. Расширяем body и html — иначе панель обрежется по краю viewport
+        document.body.style.padding = '10px';
+        document.body.style.width = (targetWidth + 20) + 'px';
+        document.documentElement.style.width = (targetWidth + 20) + 'px';
+
+        // 5. Даём браузеру пересчитать раскладку перед съёмкой
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+        // 6. Делаем снимок
         const canvas = await html2canvas(panel, {
             backgroundColor: '#b0b0b0',
             scale: 2,
             useCORS: true,
-            logging: false
+            logging: false,
+            width: panel.scrollWidth,
+            height: panel.scrollHeight,
+            windowWidth: panel.scrollWidth + 20,
+            windowHeight: panel.scrollHeight + 20,
         });
+
         const link = document.createElement('a');
         link.download = 'result-{{ score }}-of-{{ total }}.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
+    } catch (e) {
+        alert('Не удалось сохранить картинку: ' + e.message);
     } finally {
-        panel.style.background = origBg;
-        actions.style.display = origActions;
+        // Возвращаем всё как было
+        panel.style.background = restore.panelBg;
+        panel.style.width = restore.panelWidth;
+        panel.style.minWidth = restore.panelMinWidth;
+        panel.style.maxWidth = restore.panelMaxWidth;
+        actions.style.display = restore.actionsDisplay;
+        wrap.style.overflow = restore.wrapOverflow;
+        wrap.style.overflowX = restore.wrapOverflowX;
+        document.body.style.padding = restore.bodyPadding;
+        document.body.style.width = restore.bodyWidth;
+        document.documentElement.style.width = restore.htmlWidth;
     }
 });
 </script>

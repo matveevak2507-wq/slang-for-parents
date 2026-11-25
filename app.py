@@ -8,6 +8,7 @@ from flask import (Flask, render_template, request, redirect, url_for,
 
 from config import Config
 from models import db, Word, QuizQuestion, FillBlankTask, Suggestion
+from werkzeug.exceptions import RequestEntityTooLarge
 
 
 def create_app():
@@ -35,6 +36,8 @@ def _save_image(file_storage, prefix):
         return None
     ext = os.path.splitext(file_storage.filename)[1].lower()
     if ext not in (".jpg", ".jpeg", ".png", ".webp"):
+        flash(f"Формат «{ext}» не поддерживается. Разрешены: JPG, PNG, WEBP. "
+              f"Конвертируйте фото, например, через «Просмотр» → «Сохранить как» → JPG.", "error")
         return None
     name = f"{prefix}_{uuid.uuid4().hex}{ext}"
     file_storage.save(os.path.join(app.config["UPLOAD_FOLDER"], name))
@@ -59,6 +62,11 @@ def _score_color(score, total):
         return "#fbc02d", "Хороший результат! Вы на верном пути."
     return "#2e7d32", "Так держать, Вы молодцы!"
 
+@app.errorhandler(RequestEntityTooLarge)
+def handle_file_too_large(e):
+    flash("Файл слишком большой. Максимальный размер — 20 МБ. "
+          "Попробуйте сжать фото или выбрать другое.", "error")
+    return redirect(request.referrer or url_for("index")), 413
 
 @app.route("/")
 def index():
