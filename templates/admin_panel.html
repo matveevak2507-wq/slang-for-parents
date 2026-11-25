@@ -83,4 +83,57 @@
         </table>
     </div>
 </div>
+<h2 style="margin-top: 32px;">Вопросы викторины ({{ questions|length if questions else 0 }})</h2>
+<div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead>
+            <tr><th>ID</th><th>Вопрос</th><th>Правильный</th><th>Действия</th></tr>
+        </thead>
+        <tbody>
+            {% for q in questions %}
+            <tr>
+                <td>{{ q.id }}</td>
+                <td>{{ q.question }}</td>
+                <td>{{ q.correct_options }}</td>
+                <td class="admin-table-actions">
+                    <a href="{{ url_for('admin_edit_question', qid=q.id) }}"
+                       class="btn btn-secondary btn-small">Редактировать</a>
+                    <form method="post" action="{{ url_for('admin_delete_question', qid=q.id) }}"
+                          style="display:inline;"
+                          onsubmit="return confirm('Удалить вопрос?');">
+                        <button type="submit" class="btn btn-danger btn-small">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<h2 style="margin-top: 32px;">Задания с пропусками ({{ fills|length if fills else 0 }})</h2>
+<div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead>
+            <tr><th>ID</th><th>Предложение</th><th>Ответ</th><th>Действия</th></tr>
+        </thead>
+        <tbody>
+            {% for f in fills %}
+            <tr>
+                <td>{{ f.id }}</td>
+                <td>{{ f.sentence }}</td>
+                <td>{{ f.correct_answer }}</td>
+                <td class="admin-table-actions">
+                    <a href="{{ url_for('admin_edit_fill', fid=f.id) }}"
+                       class="btn btn-secondary btn-small">Редактировать</a>
+                    <form method="post" action="{{ url_for('admin_delete_fill', fid=f.id) }}"
+                          style="display:inline;"
+                          onsubmit="return confirm('Удалить задание?');">
+                        <button type="submit" class="btn btn-danger btn-small">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

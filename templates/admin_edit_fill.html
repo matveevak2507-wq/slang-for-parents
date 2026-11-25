@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Редактирование задания{% endblock %}
+{% block content %}
+<div class="panel form-panel">
+    <h1 class="page-title">Редактирование задания</h1>
+    <form method="post" class="suggest-form">
+        <label>
+            Предложение (используйте ____ для пропуска)
+            <textarea name="sentence" rows="3" required>{{ f.sentence }}</textarea>
+        </label>
+        <label>
+            Правильный ответ
+            <input type="text" name="correct_answer" value="{{ f.correct_answer }}" required>
+        </label>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -320,8 +320,11 @@ def admin_panel():
     suggestions = Suggestion.query.filter_by(status="pending") \
         .order_by(Suggestion.created_at.desc()).all()
     words = Word.query.order_by(Word.word).all()
-    return render_template("admin_panel.html", suggestions=suggestions, words=words)
-
+    questions = QuizQuestion.query.order_by(QuizQuestion.id).all()
+    fills = FillBlankTask.query.order_by(FillBlankTask.id).all()
+    return render_template("admin_panel.html",
+                           suggestions=suggestions, words=words,
+                           questions=questions, fills=fills)
 
 @app.route("/admin/suggestion/<int:sid>/approve", methods=["POST"])
 @admin_required
@@ -447,6 +450,58 @@ def admin_new_fill():
         return redirect(url_for("admin_panel"))
     return render_template("admin_new_fill.html")
 
+@app.route("/admin/question/<int:qid>/edit", methods=["GET", "POST"])
+@admin_required
+def admin_edit_question(qid):
+    q = QuizQuestion.query.get_or_404(qid)
+    if request.method == "POST":
+        q.question = request.form["question"].strip()
+        q.option_a = request.form["option_a"].strip()
+        q.option_b = request.form["option_b"].strip()
+        q.option_c = request.form["option_c"].strip()
+        q.option_d = (request.form.get("option_d") or "").strip() or None
+        correct = request.form.getlist("correct")
+        if not correct:
+            flash("Выберите хотя бы один правильный вариант.", "error")
+            return redirect(url_for("admin_edit_question", qid=qid))
+        q.correct_options = ",".join(sorted(correct))
+        db.session.commit()
+        flash("Вопрос обновлён.", "success")
+        return redirect(url_for("admin_panel"))
+    return render_template("admin_edit_question.html", q=q)
+
+
+@app.route("/admin/question/<int:qid>/delete", methods=["POST"])
+@admin_required
+def admin_delete_question(qid):
+    q = QuizQuestion.query.get_or_404(qid)
+    db.session.delete(q)
+    db.session.commit()
+    flash("Вопрос удалён.", "success")
+    return redirect(url_for("admin_panel"))
+
+
+@app.route("/admin/fill/<int:fid>/edit", methods=["GET", "POST"])
+@admin_required
+def admin_edit_fill(fid):
+    f = FillBlankTask.query.get_or_404(fid)
+    if request.method == "POST":
+        f.sentence = request.form["sentence"].strip()
+        f.correct_answer = request.form["correct_answer"].strip()
+        db.session.commit()
+        flash("Задание обновлено.", "success")
+        return redirect(url_for("admin_panel"))
+    return render_template("admin_edit_fill.html", f=f)
+
+
+@app.route("/admin/fill/<int:fid>/delete", methods=["POST"])
+@admin_required
+def admin_delete_fill(fid):
+    f = FillBlankTask.query.get_or_404(fid)
+    db.session.delete(f)
+    db.session.commit()
+    flash("Задание удалено.", "success")
+    return redirect(url_for("admin_panel"))
 
 @app.route("/uploads/<path:filename>")
 def uploaded_file(filename):
