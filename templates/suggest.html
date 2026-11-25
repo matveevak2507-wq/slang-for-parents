@@ -5,7 +5,7 @@
     <h1 class="page-title">Форма предложений</h1>
     <p class="lead">Предложите своё сленговое слово — мы рассмотрим его и, возможно, добавим в словарь.</p>
 
-    <form method="post" enctype="multipart/form-data" class="suggest-form">
+    <form method="post" enctype="multipart/form-data" class="suggest-form" id="suggest-form">
         <label>
             Слово <span class="required">*</span>
             <input type="text" name="word" required maxlength="100" placeholder="Например: краш">
@@ -16,12 +16,87 @@
         </label>
         <label>
             Фото (необязательно)
-            <input type="file" name="image" accept="image/*">
+            <input type="file" name="image" id="image-input" accept="image/jpeg,image/png,image/webp,image/*">
+            <small id="image-status" style="display:none; color:#555;"></small>
         </label>
-        <button type="submit" class="btn btn-primary btn-full">Отправить</button>
+        <button type="submit" class="btn btn-primary btn-full" id="submit-btn">Отправить</button>
         <p class="small-note">
             Слово будет рассмотрено в течение 30 рабочих лет. Спасибо за терпение 😊
         </p>
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const form = document.getElementById('suggest-form');
+const input = document.getElementById('image-input');
+const statusEl = document.getElementById('image-status');
+const submitBtn = document.getElementById('submit-btn');
+const MAX_MB = 15;  // до сжатия
+
+// При выборе фото — сразу сжимаем и подменяем файл в форме
+input.addEventListener('change', async () => {
+    const file = input.files[0];
+    if (!file) {
+        statusEl.style.display = 'none';
+        return;
+    }
+
+    // Проверка размера до сжатия
+    if (file.size > MAX_MB * 1024 * 1024) {
+        statusEl.style.display = 'block';
+        statusEl.style.color = '#c62828';
+        statusEl.textContent = `Файл ${(file.size / 1024 / 1024).toFixed(1)} МБ — больше ${MAX_MB} МБ. Выберите другое фото.`;
+        input.value = '';
+        return;
+    }
+
+    statusEl.style.display = 'block';
+    statusEl.style.color = '#555';
+    statusEl.textContent = 'Сжимаю фото…';
+
+    try {
+        const compressed = await compressImage(file, 1600, 0.85);
+        const newFile = new File([compressed], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+        const dt = new DataTransfer();
+        dt.items.add(newFile);
+        input.files = dt.files;
+        statusEl.style.color = '#2e7d32';
+        statusEl.textContent = `Готово. Размер после сжатия: ${(compressed.size / 1024).toFixed(0)} КБ.`;
+    } catch (e) {
+        statusEl.style.color = '#c62828';
+        statusEl.textContent = 'Не удалось обработать фото: ' + e.message;
+    }
+});
+
+// Сжатие через canvas (работает и с HEIC на iPhone — Safari сам раскодирует)
+function compressImage(file, maxSide, quality) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            let { width, height } = img;
+            if (width > maxSide || height > maxSide) {
+                if (width > height) { height = Math.round(height * maxSide / width); width = maxSide; }
+                else { width = Math.round(width * maxSide / height); height = maxSide; }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('canvas.toBlob вернул null')), 'image/jpeg', quality);
+        };
+        img.onerror = () => reject(new Error('Не удалось прочитать файл (возможно, HEIC)'));
+        img.src = url;
+    });
+}
+
+// Показываем «Отправляю…», чтобы было понятно, что что-то происходит
+form.addEventListener('submit', () => {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Отправляю…';
+});
+</script>
 {% endblock %}
