@@ -95,8 +95,11 @@ function compressImage(file, maxSide, quality) {
 
 // Показываем «Отправляю…», чтобы было понятно, что что-то происходит
 form.addEventListener('submit', () => {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Отправляю…';
+    // Сначала даем браузеру начать отправку формы, и только потом блокируем кнопку
+    setTimeout(() => {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Отправляю…';
+    }, 10);
 });
 </script>
 {% endblock %}
